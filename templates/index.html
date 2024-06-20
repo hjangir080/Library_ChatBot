@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Details Chatbot</title>
+    <link rel="stylesheet" href="static/style.css">
+</head>
+
+<body>
+    <div class="container">
+        <h1>Book Details Chatbot</h1>
+        <div id="chat-history"></div>
+        <textarea id="userPrompt" placeholder="Enter your question here"></textarea>
+        <button onclick="sendPrompt()">Send</button>
+    </div>
+
+    <script>
+        async function sendPrompt() {
+            const prompt = document.getElementById('userPrompt').value;
+            const chatHistoryElement = document.getElementById('chat-history');
+
+            if (prompt.trim() === "") {
+                alert("Please enter a question.");
+                return;
+            }
+
+            // Clear the input box
+            document.getElementById('userPrompt').value = '';
+
+            const response = await fetch('/chat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ prompt: prompt }),
+            });
+
+            const data = await response.json();
+
+            // Create a new div to hold the prompt and response
+            const chatEntry = document.createElement('div');
+            chatEntry.classList.add('chat-entry');
+            chatEntry.innerHTML = `<strong>You:</strong> ${prompt}<br><strong>Bot:</strong> ${formatResponse(data)}`;
+
+            // Append the new chat entry to the chat history
+            chatHistoryElement.appendChild(chatEntry);
+
+            // Scroll to the bottom of the chat history
+            chatHistoryElement.scrollTop = chatHistoryElement.scrollHeight;
+        }
+
+        function formatResponse(data) {
+            if (data.response) {
+                // If the response is a simple text message, return it directly
+                return data.response.replace(/\n/g, "<br>");  // Replace newlines with <br> for HTML display
+            } else {
+                // If the response is a complex JSON, format it for better readability
+                return `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+            }
+        }
+
+    </script>
+</body>
+
+</html>
