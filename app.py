@@ -54,9 +54,27 @@ def get_book_details(book_id):
     else:
         return {'error': 'Unable to fetch details. Please check the book ID and try again.'}
 
-available_functions = {
-    "get_book_details": get_book_details,
-}
+def get_gpt_response(messages):
+    functions = [
+        {
+            "name": "get_book_details",
+            "description": "Retrieves the details of the books given the ID.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "book_id": {"type": "string", "description": "The ID of the book."}
+                },
+                "required": ["book_id"],
+            },
+        }
+    ]
+    completion = client.chat.completions.create(
+        model="gpt-4o",
+        messages=messages,
+        functions=functions,
+        function_call="auto",
+    )
+    return completion
 
 @app.route('/')
 def index():
@@ -73,40 +91,24 @@ def chat():
     
     messages.append({"role": "user", "content": user_prompt})
 
-    functions = [
-        {
-            "name": "get_book_details",
-            "description": "Retrieves the details of the books given the ID.",
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "book_id": {"type": "string", "description": "The ID of the book."}
-                },
-                "required": ["book_id"],
-            },
-        }
-    ]
+    completion = get_gpt_response(messages)
+    
+    while not completion.choices[0].message.content:
+        if completion.choices and completion.choices[0].finish_reason == "function_call":
+            function_call = completion.choices[0].message.function_call
+            function_name = function_call.name
+            function_args = function_call.arguments
+            args = json.loads(function_args)
+            print(function_name)
 
-    completion = client.chat.completions.create(
-        model="gpt-4o",
-        messages=messages,
-        functions=functions,
-        function_call="auto",
-    )
-
-    if completion.choices and completion.choices[0].finish_reason == "function_call":
-        function_call = completion.choices[0].message.function_call
-        function_name = function_call.name
-        function_args = function_call.arguments
-        args = json.loads(function_args)
-
-        if function_name == "get_book_details":
-            book_id = args['book_id']
-            book_details = get_book_details(book_id)
-            messages.append({"role": "assistant", "content": str(book_details)})
-            session['messages'] = messages  # Save messages to session
-            return jsonify(book_details)
-    elif completion.choices and completion.choices[0].message:
+            if function_name == "get_book_details":
+                book_id = args['book_id']
+                book_details = get_book_details(book_id)
+                messages.append({"role": "user", "content": f"Below is a user query and the search results for the user query. Using the search result, provide a reply to the user query: {user_prompt} \n Search results: {str(book_details)}"})
+                session['messages'] = messages 
+                completion = get_gpt_response(messages)
+                
+    if completion.choices and completion.choices[0].message:
         model_response = completion.choices[0].message.content
         messages.append({"role": "assistant", "content": model_response})
         session['messages'] = messages  # Save messages to session
