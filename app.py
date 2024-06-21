@@ -8,8 +8,10 @@ app = Flask(__name__)
 app.secret_key = os.urandom(24)  # Generate a secure secret key #required for session
 #in colab theres automatically a session, but for websites we need to
 
-os.environ["OPENAI_API_KEY"] = "api_key"
-os.environ["OPENAI_MODEL_NAME"] = 'gpt-4o'
+OPENAI_API_KEY=os.getenv('OPENAI_API_KEY')
+OPENAI_MODEL_NAME = os.getenv('OPENAI_MODEL_NAME', 'gpt-4')
+
+openai.api_key = OPENAI_API_KEY
 
 client = openai.OpenAI()
 model = "gpt-4o"
