@@ -25,3 +25,4 @@ Additionally, the data used by the chatbot is sourced from the API provided by [
 - `app.py`: The Python script that handles the server-side logic using Flask and OpenAI's Chat Completion API.
 
 ![image](https://github.com/hjangir080/Library_ChatBot/assets/112872382/ce55b390-86d0-440f-a5f8-d445764cfda7)
+![image](https://github.com/hjangir080/Library_ChatBot/assets/112872382/5ec25b2a-d03f-4357-a30d-978e5464201f)
