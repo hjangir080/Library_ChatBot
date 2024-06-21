@@ -2,7 +2,8 @@
 
 This project is a simple web-based chatbot designed for library assistance. 
 It uses a combination of HTML, CSS, and Python (with Flask) to provide an interactive chat interface for users to ask questions and receive responses from a bot.
-Deployed using Render at [CLICK TO VISIT](https://library-chatbot.onrender.com)
+Deployed using Render at [click to visit](https://library-chatbot.onrender.com)
+Some example ids to use can be taken from [Link](https://api.archivelab.org/items).
 
 ## Technologies Used
 
