@@ -9,7 +9,7 @@ app.secret_key = os.urandom(24)  # Generate a secure secret key #required for se
 #in colab theres automatically a session, but for websites we need to
 
 OPENAI_API_KEY=os.getenv('OPENAI_API_KEY')
-OPENAI_MODEL_NAME = os.getenv('OPENAI_MODEL_NAME', 'gpt-4')
+OPENAI_MODEL_NAME = os.getenv('OPENAI_MODEL_NAME', 'gpt-4o')
 
 openai.api_key = OPENAI_API_KEY
 
